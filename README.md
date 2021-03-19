@@ -14,6 +14,18 @@ A JS library for first-order ambisonic (FOA) and higher-order ambisonic (HOA) pr
 >
 ----
 
+---
+>
+> Additions to the library (asymmetrical processing necessary for BRIRs)
+> 
+> Bruce Wiggins (University of Derby)
+> b.j.wiggins@derby.a.uk
+> 
+> Mark Dring (University of Derby)
+> m.dring@derby.ac.uk
+> 
+---
+
 ## Description <a name="description"></a>
 JSAmbisonics is a JavaScript library that implements a set of objects for real-time spatial audio processing, using the Ambisonics framework. The objects correspond to typical ambisonic processing blocks, and internally implement Web Audio graphs for the associated operations.
 
@@ -29,6 +41,7 @@ The implemented Web Audio classes are:
 * **sceneMirror**: mirrors the sound scene of an ambisonic stream with respect to (front-back), (left-right), or (up-down) axes.
 * **virtualMic**: applies FOA and HOA virtual microphones to an ambionic stream, with real-time control of their orientation and pattern.
 * **binDecoder**: implements an ambisonic to binaural decoding, using user-defined HRTF-based filters. If these are not provided, two plain opposing cardioids are used instead.
+* **binDecoderAsym2D**: implements 2D decoder for up to 15th order.  The symmetrical assumption is discarded so asymetric Binaural Room Impulse Responses can be used, useful for auralisation of spaces to a very high order after binaural room scanning
 * **orderLimiter**: takes a HOA stream of order N, and outputs the channel-limited HOA stream of order N'<=N
 * **orderWeight**: applies user-specified gains to the channels of the same order, for directional smoothing or psychoacoustic (max energy-vector) decoding
 * **converters.wxyz2acn**: converts a traditional FOA stream to FOA ACN/N3D stream
@@ -62,6 +75,7 @@ Computation of spherical harmonics and rotations relies on the JavaScript spheri
   * [Loading of multichannel files for HOA](#multichannel)
   * [Integration with SOFA HRTFs](#sofa)  
   * [2D HOA processing](#2d)
+  * [2D HOA asymetrical processing](#2dasym)
   * [Legacy](#legacy)
   * [Developers](#developers)
   * [License](#license)
@@ -301,6 +315,10 @@ The following objects have a 2D processing counterpart, their usage is exactly t
 * **hrirLoader2D_local**
 
 ---
+## 2D asymetrical processing <a name="2dasym"></a>
+
+All binaural decoding assumes perfectly symmetrical HRIR data from the SOFA files.  This is a good assumption for anechoic data.  However, if Binaural Room Impulse Responses are used, the symmetry assumption will not hold due to the asymetrical room response.  This results in twice the number of convolutions needed to implement the binarual decoder, but with the possibly of rooms modelled accurately to 15th order then possible.  The usage is very similar to the 2D processing above, except two 32 channel HOA buffers are needed (one for the left ear, one for the right).  See the example html and js in the examples folder to see what needs changing.
+
 ## Legacy <a name="legacy"></a>
 
 In the ```./legacy``` folder of the repository there is a copy of the FOA part of the initial release of the library, when the library was still split in FOA and HOA components. The only reason that this is preserved is that if somebody is interested in FOA only processing, the *WebAudio_FOA.js* file has all the components needed without the additional complexity of HOA processing and with no external dependencies.
